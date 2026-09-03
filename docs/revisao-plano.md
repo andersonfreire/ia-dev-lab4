@@ -1,0 +1,3 @@
+## Revisão do Plano (Etapa 8)
+
+**Justificativa**: O plano original sugerido pelo agente de IA foi revisado para eliminar abstrações que poderiam induzir a falhas de arquitetura. As tarefas 1.1 e 1.2 criadas foram unificadas para garantir a aplicação de limites matemáticos estritos ([0.0, 1.0]) via Pydantic e a obrigatoriedade do retorno "HTTP 400" em casos de borda. Na lógica de bloqueio, substituiu-se o termo "diferentes thresholds" pela definição exata de uma janela de 50 requisições e limite de degradação de 0.70 (práticas sugeridas). Por fim, a Tarefa 3.2 foi limitada à emissão de logs CRITICAL, impedindo que o agente expandisse o escopo de forma excessiva.
