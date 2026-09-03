@@ -9,4 +9,4 @@ Embora a lógica da janela de 50 predições e o limite de 0.70 estivessem corre
 
 Como o cálculo de degradação ocorre em uma *background task* (`services.py`), a ausência do log na camada de serviço criaria uma **degradação silenciosa**: o modelo seria bloqueado no banco de dados, mas o usuário não seria alertada imediatamente; o alerta só ocorreria passivamente caso um usuário tentasse realizar uma nova inferência.
 
-**Ação Corretiva:** O código foi aceito com a condição de mover a instrução `logger.critical("Model BLOCKED due to degradation")` diretamente para a função `check_model_degradation` em `services.py`, garantindo o alerta em tempo real independentemente do tráfego da API.
+**Ação Corretiva:** O código foi aceito com a condição de inserir a instrução `logger.critical("Model BLOCKED due to degradation")` diretamente na função `check_model_degradation` em `services.py`, garantindo o alerta em tempo real independentemente do tráfego da API.

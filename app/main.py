@@ -63,7 +63,7 @@ def predict(model_name: str, payload: dict, db: Session = Depends(get_db)):
     ).order_by(AuditMetric.id.desc()).first()
 
     if latest_metric is not None and str(latest_metric.model_status) == "BLOCKED":
-        logger.critical(f"Prediction rejected: Model '{model_name}' is BLOCKED due to degradation.")
+        logger.warning(f"Prediction rejected: Model '{model_name}' is BLOCKED due to degradation.")
         raise HTTPException(status_code=403, detail="Model is blocked")
     
     return {"prediction": "success", "model_name": model_name}
