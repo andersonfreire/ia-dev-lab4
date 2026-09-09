@@ -92,3 +92,30 @@ def get_blocked_models(db: Session = Depends(get_db)):
         .all()
     )
     return {"blocked_models": [name for (name,) in blocked]}
+
+@app.get("/api/v1/audit/summary")
+def get_audit_summary(db: Session = Depends(get_db)):
+    model_names = [
+        name for (name,) in db.query(AuditMetric.model_name).distinct().all()
+    ]
+    blocked = 0
+    active = 0
+    for name in model_names:
+        latest = (
+            db.query(AuditMetric)
+            .filter(AuditMetric.model_name == name)
+            .order_by(AuditMetric.id.desc())
+            .first()
+        )
+        if latest is None:
+            continue
+        if str(latest.model_status) == "BLOCKED":
+            blocked += 1
+        elif str(latest.model_status) == "ACTIVE":
+            active += 1
+    return {
+        "blocked": blocked,
+        "active": active,
+        "BLOCKED": blocked,
+        "ACTIVE": active,
+    }
