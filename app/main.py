@@ -71,3 +71,14 @@ def predict(model_name: str, payload: dict, db: Session = Depends(get_db)):
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+# Task: Listar modelos bloqueados
+@app.get("/api/v1/audit/models/blocked")
+def get_blocked_models(db: Session = Depends(get_db)):
+    blocked = (
+        db.query(AuditMetric.model_name)
+        .filter(AuditMetric.model_status == "BLOCKED")
+        .distinct()
+        .all()
+    )
+    return {"blocked_models": [name for (name,) in blocked]}

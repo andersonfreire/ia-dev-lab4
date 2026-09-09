@@ -1,0 +1,20 @@
+#!/bin/bash
+# Proteção do banco de auditoria (XAI Circuit Breaker)
+
+# Bloqueia a exclusão de arquivos do banco de dados
+DELETED_DBS=$(git diff --cached --name-only --diff-filter=D | grep -E '\.(db|sqlite)$')
+if [ -n "$DELETED_DBS" ]; then
+    echo "🚨 ERRO DE GOVERNANÇA: Tentativa de exclusão do banco de auditoria bloqueada pelo hook!"
+    echo "Arquivos protegidos: $DELETED_DBS"
+    exit 1
+fi
+
+# Bloqueia o código com métodos de deleção geral
+DESTRUCTIVE_CODE=$(git diff --cached -G"(drop_all\(\)|DROP TABLE)" --name-only)
+if [ -n "$DESTRUCTIVE_CODE" ]; then
+    echo "🚨 ERRO DE GOVERNANÇA: O commit contém comandos destrutivos (drop_all ou DROP TABLE)."
+    echo "Arquivos afetados: $DESTRUCTIVE_CODE"
+    exit 1
+fi
+
+exit 0
