@@ -5,6 +5,12 @@ logger = logging.getLogger(__name__)
 from .schemas import AuditMetricCreate
 from .database import AuditMetric, set_explanations
 
+def get_model_status(db: Session, model_name: str):
+    metric = db.query(AuditMetric).filter(
+        AuditMetric.model_name == model_name
+    ).order_by(AuditMetric.id.desc()).first()
+    return metric
+
 def save_audit_metric(db: Session, metric_in: AuditMetricCreate):
     db_metric = AuditMetric(
         model_name=metric_in.model_name,

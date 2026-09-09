@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from .database import init_db, SessionLocal
 from .schemas import AuditMetricCreate
-from .services import save_audit_metric
+from .services import save_audit_metric, get_model_status
 
 from contextlib import asynccontextmanager
 
@@ -71,6 +71,16 @@ def predict(model_name: str, payload: dict, db: Session = Depends(get_db)):
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+@app.get("/api/v1/audit/models/{model_name}/status")
+def get_model_status_endpoint(model_name: str, db: Session = Depends(get_db)):
+    metric = get_model_status(db, model_name)
+    if metric is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Model not found")
+    return {
+        "model_name": metric.model_name,
+        "model_status": metric.model_status,
+    }
 
 # Task: Listar modelos bloqueados
 @app.get("/api/v1/audit/models/blocked")
